@@ -1,2 +1,0 @@
-# RunnerGame
-Created with CodeSandbox
