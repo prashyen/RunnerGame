@@ -3,6 +3,9 @@ import { ViewChild, ElementRef } from '@angular/core';
 import { Landscape } from './landscape';
 import "@angular/compiler";
 import { Character } from './character';
+import { timer } from 'rxjs';
+import { Tree } from './tree';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -11,11 +14,12 @@ import { Character } from './character';
 
 
 export class AppComponent implements OnInit {
+
   @ViewChild('myCanvas', { static: true })
   canvas: ElementRef<HTMLCanvasElement>;  
-  
+  private currDate: Date;
   private ctx: CanvasRenderingContext2D;
-
+private x:boolean;
   ngOnInit(): void {
     this.ctx = this.canvas.nativeElement.getContext('2d');
     ///Sharpen shape edges, code from https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio
@@ -33,15 +37,24 @@ export class AppComponent implements OnInit {
     ///
     this.animate();
   }
-  
+
   animate() {
     
     this.ctx.fillStyle = 'brown';
     const square = new Landscape(this.ctx);
     square.draw();
 
-    
+    const tree = new Tree(this.ctx);
+    tree.draw();
+
+    this.x = false;
     const char = new Character(this.ctx);
-    char.draw();
+    setInterval(function(){ 
+      console.log(this.x);
+      char.draw(this.x,false, false,  false, true);
+      this.x=(!this.x);
+    }, 150);
+    
+    
   }
 }
