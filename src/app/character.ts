@@ -5,8 +5,11 @@ export class Character {
   private characterBodyHeight = 44;
   private characterLegHeight = 16;
   private characterBodyWidth = 20;
-  private y = (this.ctx.canvas.height - (this.ctx.canvas.height / 5) * 2 - 10) - this.characterBodyHeight - this.characterLegHeight;
-  constructor(private ctx: CanvasRenderingContext2D) { }
+  private y;
+  constructor(private ctx: CanvasRenderingContext2D) { 
+    this.y =(this.ctx.canvas.height - (this.ctx.canvas.height / 5) * 2 - 10) - this.characterBodyHeight - this.characterLegHeight;
+    console.log((this.ctx.canvas.height - (this.ctx.canvas.height / 5) * 2 - 10) - this.characterBodyHeight - this.characterLegHeight);
+  }
   private toggleLeg: Boolean;
 
   public animateCharacter(toggleLeg: boolean, moveUp: boolean, moveDown: boolean, moveLeft: boolean, moveRight: boolean) {
@@ -18,33 +21,33 @@ export class Character {
     }, 150);
   }
 
-  public draw(toggleLeg: boolean, moveUp: boolean, moveDown: boolean, moveLeft: boolean, moveRight: boolean) {
-
-    if (moveRight) {
-      this.ctx.clearRect(this.x + this.characterBodyWidth, this.y, this.speed, this.characterBodyHeight + 1);
-      this.ctx.clearRect(this.x + 6, this.y + this.characterBodyHeight, this.speed + 6, this.characterLegHeight);
-      this.ctx.clearRect(this.x + this.characterBodyWidth - 6, this.y + this.characterBodyHeight, this.speed, this.characterLegHeight);
-
-      this.ctx.clearRect(this.x, this.y, this.speed, this.characterBodyHeight + 1);
-      this.ctx.clearRect(this.x + 8, this.y + this.characterBodyHeight, 4, this.characterLegHeight);
-      this.ctx.clearRect(this.x + this.characterBodyWidth - 6, this.y + this.characterBodyHeight, 4, this.characterLegHeight);
-
-      this.x = this.x + this.speed;
+  public draw(toggleLeg: boolean, moveUp: boolean, moveDown: boolean, moveLeft: boolean, moveRight: boolean): boolean[] {
+    this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    //console.log(this.y);
+    //console.log((this.ctx.canvas.height - (this.ctx.canvas.height / 5) * 2 - 10) - this.characterBodyHeight - this.characterLegHeight);
+    if(this.y < 300 && moveUp){
+      moveDown = true;
+      moveUp= false;
+    } else if (moveRight && !moveDown && !moveUp) {
+      this.x = this.x+this.speed;
       this.lookRight(toggleLeg);
-    } else if (moveLeft) {
-      this.ctx.clearRect(this.x + this.characterBodyWidth - 5, this.y, this.speed + 6, this.characterBodyHeight + 1);
-      this.ctx.clearRect(this.x + 10, this.y + this.characterBodyHeight, this.speed + 2, this.characterLegHeight);
-      this.ctx.clearRect(this.x + this.characterBodyWidth - 6, this.y + this.characterBodyHeight, this.speed, this.characterLegHeight);
+    }else if (moveLeft && !moveDown && !moveUp) {
       this.x = this.x - this.speed;
       this.lookLeft(toggleLeg);
-    }
-    else {
-      this.ctx.clearRect(this.x + this.characterBodyWidth, this.y, this.speed, this.characterBodyHeight + 1);
-      this.ctx.clearRect(this.x + 6, this.y + this.characterBodyHeight, this.speed + 2, this.characterLegHeight);
-      this.ctx.clearRect(this.x + this.characterBodyWidth - 4, this.y + this.characterBodyHeight, this.speed + 1, this.characterLegHeight);
-      this.ctx.clearRect(this.x + 12, this.y + this.characterBodyHeight, 2, this.characterLegHeight);
+    }else if (moveUp && !moveDown) {
+      moveDown = false;
+      this.y = this.y - this.speed;
       this.lookRight(toggleLeg);
     }
+    else if(moveDown && this.y != (this.ctx.canvas.height - (this.ctx.canvas.height / 5) * 2 - 10) - this.characterBodyHeight - this.characterLegHeight){
+      this.y = this.y + this.speed;
+      this.lookRight(toggleLeg);
+    }
+    else {
+      moveDown = false;
+      this.lookRight(toggleLeg);
+    }
+    return [moveUp, moveDown];
   }
 
 
@@ -55,15 +58,11 @@ export class Character {
 
     //legs
     if (toggleLeg) {
-      this.ctx.clearRect(this.x + 8, this.y + this.characterBodyHeight, 4, this.characterLegHeight - 6);
       this.ctx.fillRect(this.x + 8, this.y + this.characterBodyHeight, 3, this.characterLegHeight);
-      this.ctx.clearRect(this.x + this.characterBodyWidth - 6, this.y + this.characterBodyHeight, 4, this.characterLegHeight);
       this.ctx.fillRect(this.x + this.characterBodyWidth - 6, this.y + this.characterBodyHeight, 3, this.characterLegHeight - 6);
     } else {
-      this.ctx.clearRect(this.x + 8, this.y + this.characterBodyHeight, 4, this.characterLegHeight);
       this.ctx.fillRect(this.x + 8, this.y + this.characterBodyHeight, 3, this.characterLegHeight - 6);
-      this.ctx.clearRect(this.x + this.characterBodyWidth - 6, this.y + this.characterBodyHeight, 4, this.characterLegHeight - 6);
-      this.ctx.fillRect(this.x + this.characterBodyWidth - 6, this.y + this.characterBodyHeight, 3, this.characterLegHeight);
+     this.ctx.fillRect(this.x + this.characterBodyWidth - 6, this.y + this.characterBodyHeight, 3, this.characterLegHeight);
     }
     //hand
     this.ctx.fillStyle = '#636161';
@@ -83,15 +82,11 @@ export class Character {
 
     //legs
     if (toggleLeg) {
-      this.ctx.clearRect(this.x + 6, this.y + this.characterBodyHeight, 4, this.characterLegHeight - 4);
-      this.ctx.fillRect(this.x + 6, this.y + this.characterBodyHeight, 3, this.characterLegHeight);
-      this.ctx.clearRect(this.x + this.characterBodyWidth - 8, this.y + this.characterBodyHeight, 4, this.characterLegHeight);
-      this.ctx.fillRect(this.x + this.characterBodyWidth - 8, this.y + this.characterBodyHeight, 3, this.characterLegHeight - 4);
+     this.ctx.fillRect(this.x + 6, this.y + this.characterBodyHeight, 3, this.characterLegHeight);
+     this.ctx.fillRect(this.x + this.characterBodyWidth - 8, this.y + this.characterBodyHeight, 3, this.characterLegHeight - 4);
     } else {
-      this.ctx.clearRect(this.x + 6, this.y + this.characterBodyHeight, 4, this.characterLegHeight);
-      this.ctx.fillRect(this.x + 6, this.y + this.characterBodyHeight, 3, this.characterLegHeight - 4);
-      this.ctx.clearRect(this.x + this.characterBodyWidth - 8, this.y + this.characterBodyHeight, 4, this.characterLegHeight - 4);
-      this.ctx.fillRect(this.x + this.characterBodyWidth - 8, this.y + this.characterBodyHeight, 3, this.characterLegHeight);
+     this.ctx.fillRect(this.x + 6, this.y + this.characterBodyHeight, 3, this.characterLegHeight - 4);
+     this.ctx.fillRect(this.x + this.characterBodyWidth - 8, this.y + this.characterBodyHeight, 3, this.characterLegHeight);
     }
     //hand
     this.ctx.fillStyle = '#636161';

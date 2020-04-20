@@ -18,45 +18,19 @@ export class AppComponent implements OnInit {
 
   @ViewChild('myCanvas', { static: true })
   canvas: ElementRef<HTMLCanvasElement>;
-  private currDate: Date;
-  private ctx: CanvasRenderingContext2D;
-
+  ctx: CanvasRenderingContext2D;
+  
+  pageWidth:number;
   keyBoard: Number;
   moveLeft: boolean;
   moveRight: boolean;
   moveDown: boolean;
-  moveUp: boolean;
+  moveUp: boolean = false;
   toggleLeg: boolean;
-  legSpeed: number = 60;
-
-  ngOnInit(): void {
-    this.ctx = this.canvas.nativeElement.getContext('2d');
-    this.updateDisplayRatio();
-    this.animate();
-    this.monitorKeys();
-  }
-
-
-  monitorKeys() {
-    window.addEventListener('keyup', keyup)
-    window.addEventListener('keydown', keydown)
-    function keyup(e:KeyboardEvent) {
-      if (e.keyCode == 37) {
-        this.moveLeft = false;
-      } else if (e.keyCode == 39) {
-        this.moveRight = false;
-      }
-    }
-    function keydown(e:KeyboardEvent) {
-      this.keyBoard = e.keyCode
-      if (this.keyBoard == 37) {
-        this.moveLeft = true;
-      } else if (this.keyBoard == 39) {
-        this.moveRight = true;
-      }
-    }
-
-  }
+  legSpeed: number = 10;
+  treeCount: number = 5;
+  static treeSpace:number = 600;
+  static ctx: any;
 
   updateDisplayRatio() {
     ///Sharpen shape edges, code from https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio
@@ -72,23 +46,66 @@ export class AppComponent implements OnInit {
     ///
   }
 
-  private animate() {
+  ngOnInit(): void {
+    this.ctx = this.canvas.nativeElement.getContext('2d');
+    this.updateDisplayRatio();
+    this.start();
+    this.monitorKeys();
+  }
 
-    this.ctx.fillStyle = 'brown';
-    const square = new Landscape(this.ctx);
-    square.draw();
 
-    const tree = new Tree(this.ctx);
-    tree.draw();
+  monitorKeys() {
+    window.addEventListener('keyup', keyup)
+    window.addEventListener('keydown', keydown)
+    function keyup(e:KeyboardEvent) {
+      
+      if (e.keyCode == 37) {
+        this.moveLeft = false;
+      }
+       if (e.keyCode == 39) {
+        this.moveRight = false;
+      } 
+    }
+    function keydown(e:KeyboardEvent) {
+      this.keyBoard = e.keyCode
+      
+      if (e.keyCode == 38) {
+        this.moveUp = true;
+      }
+      if (this.keyBoard == 37) {
+        this.moveLeft = true;
+      }
+       if (this.keyBoard == 39) {
+        this.moveRight = true;
+      }
+    }
 
+  }
+
+  private start() {
+    const bkgd = new Landscape(this.ctx);
+    var trees = []
+    var i;
+    for(i=1; i<=this.treeCount;i++){
+      trees.push(new Tree(this.ctx,window.innerWidth+AppComponent.treeSpace*i))
+    }
     this.toggleLeg = false;
     const char = new Character(this.ctx);
 
     setInterval(function () {
-      char.draw(this.toggleLeg, this.moveUp, this.moveDown, this.moveLeft, this.moveRight);
+      console.log(this.moveDown);
+      var x =char.draw(this.toggleLeg, this.moveUp, this.moveDown, this.moveLeft, this.moveRight);
+      this.moveUp = x[0];
+      this.moveDown= x[1];
+      //console.log(this.moveDown);
       this.toggleLeg = (!this.toggleLeg);
-    }, this.legSpeed);
 
+      var i;
+      for(i=0; i<trees.length;i++){
+        trees[i].translate();
+      }
+      bkgd.draw();
+    }, this.legSpeed);
 
   }
 }
