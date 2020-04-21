@@ -27,8 +27,9 @@ export class AppComponent implements OnInit {
   moveDown: boolean;
   moveUp: boolean = false;
   toggleLeg: boolean;
-  legSpeed: number = 10;
+  legSpeed: number = 20;
   treeCount: number = 5;
+  static score: number;
   static treeSpace:number = 600;
   static ctx: any;
 
@@ -49,6 +50,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.ctx = this.canvas.nativeElement.getContext('2d');
     this.updateDisplayRatio();
+    AppComponent.score = 0;
     this.start();
     this.monitorKeys();
   }
@@ -81,6 +83,11 @@ export class AppComponent implements OnInit {
     }
 
   }
+  static displayScore(score:number){
+      this.ctx.font = 100 + " " + 100;
+      this.ctx.fillStyle = "black";
+      this.ctx.fillText(score.toString(), window.innerWidth-100, window.innerHeight-400);
+  }
 
   private start() {
     const bkgd = new Landscape(this.ctx);
@@ -92,20 +99,27 @@ export class AppComponent implements OnInit {
     this.toggleLeg = false;
     const char = new Character(this.ctx);
 
+   // console.log(this.score);
     setInterval(function () {
-      console.log(this.moveDown);
+      //console.log(this.moveDown);
       var x =char.draw(this.toggleLeg, this.moveUp, this.moveDown, this.moveLeft, this.moveRight);
       this.moveUp = x[0];
       this.moveDown= x[1];
+      let charx = x[2];
+      let chary=x[3];
+      let charwidth=x[4];
+      let charheight =x[5];
+      let charspeed =x[6];
       //console.log(this.moveDown);
       this.toggleLeg = (!this.toggleLeg);
-
       var i;
       for(i=0; i<trees.length;i++){
-        trees[i].translate();
+        AppComponent.score =  trees[i].translate(charx, chary, charwidth, charheight, charspeed, AppComponent.score);
       }
       bkgd.draw();
+      //AppComponent.displayScore(AppComponent.score);
     }, this.legSpeed);
+    this.ctx.fillText(AppComponent.score.toString(), 500, 50);
 
   }
 }

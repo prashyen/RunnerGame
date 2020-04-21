@@ -8,7 +8,7 @@ export class Character {
   private y;
   constructor(private ctx: CanvasRenderingContext2D) { 
     this.y =(this.ctx.canvas.height - (this.ctx.canvas.height / 5) * 2 - 10) - this.characterBodyHeight - this.characterLegHeight;
-    console.log((this.ctx.canvas.height - (this.ctx.canvas.height / 5) * 2 - 10) - this.characterBodyHeight - this.characterLegHeight);
+    //console.log((this.ctx.canvas.height - (this.ctx.canvas.height / 5) * 2 - 10) - this.characterBodyHeight - this.characterLegHeight);
   }
   private toggleLeg: Boolean;
 
@@ -21,17 +21,15 @@ export class Character {
     }, 150);
   }
 
-  public draw(toggleLeg: boolean, moveUp: boolean, moveDown: boolean, moveLeft: boolean, moveRight: boolean): boolean[] {
+  public draw(toggleLeg: boolean, moveUp: boolean, moveDown: boolean, moveLeft: boolean, moveRight: boolean): any[] {
     this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-    //console.log(this.y);
-    //console.log((this.ctx.canvas.height - (this.ctx.canvas.height / 5) * 2 - 10) - this.characterBodyHeight - this.characterLegHeight);
     if(this.y < 300 && moveUp){
       moveDown = true;
       moveUp= false;
-    } else if (moveRight && !moveDown && !moveUp) {
+    } else if (moveRight && !moveDown && !moveUp&& this.x+this.characterBodyWidth<window.innerWidth) {
       this.x = this.x+this.speed;
       this.lookRight(toggleLeg);
-    }else if (moveLeft && !moveDown && !moveUp) {
+    }else if (moveLeft && !moveDown && !moveUp && 0<this.x) {
       this.x = this.x - this.speed;
       this.lookLeft(toggleLeg);
     }else if (moveUp && !moveDown) {
@@ -47,7 +45,7 @@ export class Character {
       moveDown = false;
       this.lookRight(toggleLeg);
     }
-    return [moveUp, moveDown];
+    return [moveUp, moveDown, this.x, this.y, this.characterBodyWidth, this.characterBodyHeight+this.characterLegHeight, this.speed];
   }
 
 
