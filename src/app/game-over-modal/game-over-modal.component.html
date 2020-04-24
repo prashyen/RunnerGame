@@ -1,1 +1,11 @@
-<p>game-over-modal works!</p>
+<h1 mat-dialog-title>Runner Game</h1>
+<div mat-dialog-content>
+  <mat-tab-group mat-align-tabs="center">
+    <mat-tab label="How To Play"> Content 1 </mat-tab>
+    <mat-tab label="High Scores"> Content 2 </mat-tab>
+    <mat-tab label="Join High Score List"> Content 3 </mat-tab>
+  </mat-tab-group>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Play Game</button>
+</div>

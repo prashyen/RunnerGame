@@ -10,6 +10,7 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dial
 import { ModalComponent } from '../modal/modal.component';
 import { Lives } from '../objects/lives';
 import { collisionDetector } from '../collisionDetector';
+import { GameOverModalComponent } from '../game-over-modal/game-over-modal.component';
 
 
 export interface DialogData {
@@ -32,6 +33,7 @@ export class GameAreaComponent implements OnInit {
   pageWidth:number;
   keyBoard: Number;
   moveLeft: boolean;
+  gameOver: Boolean = false;
   moveRight: boolean;
   moveDown: boolean;
   moveUp: boolean = false;
@@ -42,6 +44,7 @@ export class GameAreaComponent implements OnInit {
   static score: number;
   static treeSpace:number = 600;
   static ctx: any;
+  static canvas: any;
   name: any;
   animal: any;
 
@@ -49,6 +52,19 @@ export class GameAreaComponent implements OnInit {
 
   openStartUpDialog(): void {
     const dialogRef = this.dialog.open(ModalComponent, {
+      width: '50vw',
+      height: '60vh',
+      data: {name: this.name, animal: this.animal}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.initializeGame();
+      this.animal = result;
+    });
+  }
+
+  openGameOverDialog(): void {
+    const dialogRef = this.dialog.open(GameOverModalComponent, {
       width: '50vw',
       height: '50vh',
       data: {name: this.name, animal: this.animal}
@@ -133,13 +149,14 @@ export class GameAreaComponent implements OnInit {
     const char = new Character(this.ctx);
     const lives = new Lives(this.ctx);
     var trees = []
-    var i;
+    
+    var i: number;
     for(i=1; i<=this.treeCount;i++){
       trees.push(new Tree(this.ctx,window.innerWidth+GameAreaComponent.treeSpace*i, i))
     }
 
     this.toggleLeg = false;
-    setInterval(function () {
+    var intId = setInterval(function (gameover): Boolean {
       var x =char.draw(this.toggleLeg, this.moveUp, this.moveDown, this.moveLeft, this.moveRight);
       this.moveUp = x[0];
       this.moveDown= x[1];
@@ -149,14 +166,19 @@ export class GameAreaComponent implements OnInit {
       let charheight =x[5];
       let charspeed =x[6];
       this.toggleLeg = (!this.toggleLeg);
-      var i;
+      var i: any;
       trees.forEach(function(entry){
         entry.translate(charx, chary, charwidth, charheight, charspeed,GameAreaComponent.lives, GameAreaComponent.score);
-        collisionDetector.detect(entry, char);
+        gameover = collisionDetector.detect(entry, char);
       })
       lives.drawLives(GameAreaComponent.lives);
       bkgd.draw();
-    }, this.legSpeed);
+      return gameover;
+    }, this.legSpeed, this.gameOver);
+    console.log("test"+this.gameOver);
+    //if(this.gameOver == true){
+      //this.canvas.nativeElement.getElementsByTagName("button")[1].click()
+   // }
     this.ctx.fillText(GameAreaComponent.score.toString(), 500, 50);
 
   }
