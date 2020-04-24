@@ -1,14 +1,15 @@
 export class Character {
-  private color = '#808080';
-  private x = 20;
-  private speed = 5;
-  private characterBodyHeight = 44;
-  private characterLegHeight = 16;
-  private characterBodyWidth = 20;
-  private y;
-  constructor(private ctx: CanvasRenderingContext2D) { 
-    this.y =(this.ctx.canvas.height - (this.ctx.canvas.height / 5) * 2 - 10) - this.characterBodyHeight - this.characterLegHeight;
-    console.log((this.ctx.canvas.height - (this.ctx.canvas.height / 5) * 2 - 10) - this.characterBodyHeight - this.characterLegHeight);
+  public color = '#808080';
+  public x = 20;
+  public speed = 5;
+  public characterBodyHeight = 44;
+  public characterLegHeight = 16;
+  public d;
+  public characterBodyWidth = 20;
+  public y;
+  constructor(private ctx: CanvasRenderingContext2D) {
+    this.y = (this.ctx.canvas.height - (this.ctx.canvas.height / 5) * 2 - 10) - this.characterBodyHeight - this.characterLegHeight;
+    this.d = (this.ctx.canvas.height - (this.ctx.canvas.height / 5) * 2 - 10) - this.characterBodyHeight - this.characterLegHeight;
   }
   private toggleLeg: Boolean;
 
@@ -21,33 +22,31 @@ export class Character {
     }, 150);
   }
 
-  public draw(toggleLeg: boolean, moveUp: boolean, moveDown: boolean, moveLeft: boolean, moveRight: boolean): boolean[] {
+  public draw(toggleLeg: boolean, moveUp: boolean, moveDown: boolean, moveLeft: boolean, moveRight: boolean): any[] {
     this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-    //console.log(this.y);
-    //console.log((this.ctx.canvas.height - (this.ctx.canvas.height / 5) * 2 - 10) - this.characterBodyHeight - this.characterLegHeight);
-    if(this.y < 300 && moveUp){
+    if (this.y < 300 && moveUp) {
       moveDown = true;
-      moveUp= false;
-    } else if (moveRight && !moveDown && !moveUp) {
-      this.x = this.x+this.speed;
+      moveUp = false;
+    } else if (moveRight && !moveDown && !moveUp && this.x + this.characterBodyWidth < window.innerWidth) {
+      this.x = this.x + this.speed;
       this.lookRight(toggleLeg);
-    }else if (moveLeft && !moveDown && !moveUp) {
+    } else if (moveLeft && !moveDown && !moveUp && 0 < this.x) {
       this.x = this.x - this.speed;
       this.lookLeft(toggleLeg);
-    }else if (moveUp && !moveDown) {
+    } else if (moveUp && !moveDown) {
       moveDown = false;
-      this.y = this.y - this.speed;
+      this.y = this.y - this.speed - 4;
       this.lookRight(toggleLeg);
     }
-    else if(moveDown && this.y != (this.ctx.canvas.height - (this.ctx.canvas.height / 5) * 2 - 10) - this.characterBodyHeight - this.characterLegHeight){
-      this.y = this.y + this.speed;
+    else if (moveDown && this.y != (this.ctx.canvas.height - (this.ctx.canvas.height / 5) * 2 - 10) - this.characterBodyHeight - this.characterLegHeight) {
+      this.y = this.y + this.speed + 4;
       this.lookRight(toggleLeg);
     }
     else {
       moveDown = false;
       this.lookRight(toggleLeg);
     }
-    return [moveUp, moveDown];
+    return [moveUp, moveDown, this.x, this.y, this.characterBodyWidth, this.characterBodyHeight + this.characterLegHeight, this.speed];
   }
 
 
@@ -62,7 +61,7 @@ export class Character {
       this.ctx.fillRect(this.x + this.characterBodyWidth - 6, this.y + this.characterBodyHeight, 3, this.characterLegHeight - 6);
     } else {
       this.ctx.fillRect(this.x + 8, this.y + this.characterBodyHeight, 3, this.characterLegHeight - 6);
-     this.ctx.fillRect(this.x + this.characterBodyWidth - 6, this.y + this.characterBodyHeight, 3, this.characterLegHeight);
+      this.ctx.fillRect(this.x + this.characterBodyWidth - 6, this.y + this.characterBodyHeight, 3, this.characterLegHeight);
     }
     //hand
     this.ctx.fillStyle = '#636161';
@@ -82,11 +81,11 @@ export class Character {
 
     //legs
     if (toggleLeg) {
-     this.ctx.fillRect(this.x + 6, this.y + this.characterBodyHeight, 3, this.characterLegHeight);
-     this.ctx.fillRect(this.x + this.characterBodyWidth - 8, this.y + this.characterBodyHeight, 3, this.characterLegHeight - 4);
+      this.ctx.fillRect(this.x + 6, this.y + this.characterBodyHeight, 3, this.characterLegHeight);
+      this.ctx.fillRect(this.x + this.characterBodyWidth - 8, this.y + this.characterBodyHeight, 3, this.characterLegHeight - 4);
     } else {
-     this.ctx.fillRect(this.x + 6, this.y + this.characterBodyHeight, 3, this.characterLegHeight - 4);
-     this.ctx.fillRect(this.x + this.characterBodyWidth - 8, this.y + this.characterBodyHeight, 3, this.characterLegHeight);
+      this.ctx.fillRect(this.x + 6, this.y + this.characterBodyHeight, 3, this.characterLegHeight - 4);
+      this.ctx.fillRect(this.x + this.characterBodyWidth - 8, this.y + this.characterBodyHeight, 3, this.characterLegHeight);
     }
     //hand
     this.ctx.fillStyle = '#636161';
