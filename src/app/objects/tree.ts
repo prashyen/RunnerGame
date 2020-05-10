@@ -32,7 +32,7 @@ export class Tree {
     this.x = this.x - this.speed;
     this.ctx.font = "25px Arial";
     this.ctx.fillStyle = "black";
-    this.ctx.fillText("Score: " + GameAreaComponent.score.toString(), window.innerWidth - 200, window.innerHeight - 550);
+    this.ctx.fillText("Score: " + GameAreaComponent.score.toString(), window.innerWidth*4/5, window.innerHeight/10);
     return [lives, score]
   }
 

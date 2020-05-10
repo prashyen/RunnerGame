@@ -31,7 +31,7 @@ export class Character {
   public draw(toggleLeg: boolean, moveUp: boolean, moveDown: boolean, moveLeft: boolean, moveRight: boolean): any[] {
 
     this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-    if (this.y < 300 && moveUp) {
+    if (this.y < ((this.ctx.canvas.height - (this.ctx.canvas.height / 5) * 2 - 10) - this.characterBodyHeight - this.characterLegHeight) -150 && moveUp) {
       moveDown = true;
       moveUp = false;
     } else if (moveRight && !moveDown && !moveUp && this.x + this.characterBodyWidth < window.innerWidth) {

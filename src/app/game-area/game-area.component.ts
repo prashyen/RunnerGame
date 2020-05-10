@@ -56,6 +56,8 @@ export class GameAreaComponent implements OnInit {
     const dialogRef = this.dialog.open(ModalComponent, {
       width: '50vw',
       height: '60vh',
+      minHeight: '300px',
+
       data: { name: this.name, animal: this.animal }
     });
 
@@ -69,6 +71,7 @@ export class GameAreaComponent implements OnInit {
     const dialogRef = this.dialog.open(GameOverModalComponent, {
       width: '30vw',
       height: '36vh',
+      minHeight: '200px',
       data: { name: GameAreaComponent.score, animal: this.animal }
     });
 
@@ -140,7 +143,7 @@ export class GameAreaComponent implements OnInit {
   static displayScore(score: number) {
     this.ctx.font = 100 + " " + 100;
     this.ctx.fillStyle = "black";
-    this.ctx.fillText(score.toString(), window.innerWidth - 100, window.innerHeight - 400);
+    this.ctx.fillText(score.toString(), window.innerWidth/5, window.innerHeight/10);
   }
 
   public static setLives(newLives: number) {
@@ -171,7 +174,6 @@ export class GameAreaComponent implements OnInit {
     this.toggleLeg = false;
     collisionDetector.gameOver = false;
     var intId = setInterval(function (): Boolean {
-      console.log(Character.speed);
       var x = char.draw(this.toggleLeg, this.moveUp, this.moveDown, this.moveLeft, this.moveRight);
       this.moveUp = x[0];
       this.moveDown = x[1];
@@ -196,7 +198,6 @@ export class GameAreaComponent implements OnInit {
       return gameover;
     }, this.legSpeed, this.gameOver);
 
-    this.ctx.fillText(GameAreaComponent.score.toString(), 500, 50);
 
   }
 }
