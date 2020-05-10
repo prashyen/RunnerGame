@@ -29,32 +29,34 @@ export class GameAreaComponent implements OnInit {
   @ViewChild('myCanvas', { static: true })
   canvas: ElementRef<HTMLCanvasElement>;
   ctx: CanvasRenderingContext2D;
-  
-  pageWidth:number;
+
+  pageWidth: number;
   keyBoard: Number;
   moveLeft: boolean;
   gameOver: Boolean = false;
   moveRight: boolean;
   moveDown: boolean;
   moveUp: boolean = false;
-  static lives:number = 5;
+  static lives: number = 5;
   toggleLeg: boolean;
   legSpeed: number = 20;
   treeCount: number = 5;
   static score: number;
-  static treeSpace:number = 600;
+  static treeSpace: number = 600;
   static ctx: any;
-  static canvas: any;
+  static can: ElementRef<HTMLCanvasElement>;
   name: any;
   animal: any;
 
-  constructor(public dialog: MatDialog){ }
+  constructor(public dialog: MatDialog) {
+    GameAreaComponent.can = this.canvas;
+  }
 
   openStartUpDialog(): void {
     const dialogRef = this.dialog.open(ModalComponent, {
       width: '50vw',
       height: '60vh',
-      data: {name: this.name, animal: this.animal}
+      data: { name: this.name, animal: this.animal }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -65,14 +67,13 @@ export class GameAreaComponent implements OnInit {
 
   openGameOverDialog(): void {
     const dialogRef = this.dialog.open(GameOverModalComponent, {
-      width: '50vw',
-      height: '50vh',
-      data: {name: this.name, animal: this.animal}
+      width: '30vw',
+      height: '36vh',
+      data: { name: GameAreaComponent.score, animal: this.animal }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       this.initializeGame();
-      this.animal = result;
     });
   }
 
@@ -96,89 +97,105 @@ export class GameAreaComponent implements OnInit {
     this.canvas.nativeElement.getElementsByTagName("button")[0].click()
   }
 
-  initializeGame(){
+  initializeGame() {
     GameAreaComponent.score = 0;
-    this.start();
+    this.start(this.canvas);
     this.monitorKeys();
   }
 
   monitorKeys() {
     window.addEventListener('keyup', keyup)
     window.addEventListener('keydown', keydown)
-    function keyup(e:KeyboardEvent) {
-      
+    function keyup(e: KeyboardEvent) {
+
       if (e.keyCode == 37) {
         this.moveLeft = false;
       }
-       if (e.keyCode == 39) {
+      if (e.keyCode == 39) {
         this.moveRight = false;
-      } 
+      }
+      //X
+      if (e.keyCode == 88 && !this.moveUp) {
+        Character.increaseSpeed()
+      }
+      if (e.keyCode == 90 && !this.moveUp) {
+        Character.decreaseSpeed()
+      }
     }
-    function keydown(e:KeyboardEvent) {
+    function keydown(e: KeyboardEvent) {
       this.keyBoard = e.keyCode
-      
+
       if (e.keyCode == 38) {
         this.moveUp = true;
       }
       if (this.keyBoard == 37) {
         this.moveLeft = true;
       }
-       if (this.keyBoard == 39) {
+      if (this.keyBoard == 39) {
         this.moveRight = true;
       }
     }
 
   }
-  static displayScore(score:number){
-      this.ctx.font = 100 + " " + 100;
-      this.ctx.fillStyle = "black";
-      this.ctx.fillText(score.toString(), window.innerWidth-100, window.innerHeight-400);
+  static displayScore(score: number) {
+    this.ctx.font = 100 + " " + 100;
+    this.ctx.fillStyle = "black";
+    this.ctx.fillText(score.toString(), window.innerWidth - 100, window.innerHeight - 400);
   }
 
-  public static setLives(newLives:number){
+  public static setLives(newLives: number) {
     GameAreaComponent.lives = newLives;
   }
 
-  public static setScore(newScore:number){
+  public static setScore(newScore: number) {
     GameAreaComponent.score = newScore;
   }
 
 
-  private start() {
+  start(canvas: any) {
     const bkgd = new Landscape(this.ctx);
     const char = new Character(this.ctx);
     const lives = new Lives(this.ctx);
     var trees = []
-    
+
+    function game(intId) {
+      clearInterval(intId);
+      canvas.nativeElement.getElementsByTagName("button")[1].click()
+    }
+
     var i: number;
-    for(i=1; i<=this.treeCount;i++){
-      trees.push(new Tree(this.ctx,window.innerWidth+GameAreaComponent.treeSpace*i, i))
+    for (i = 1; i <= this.treeCount; i++) {
+      trees.push(new Tree(this.ctx, window.innerWidth + GameAreaComponent.treeSpace * i, i))
     }
 
     this.toggleLeg = false;
-    var intId = setInterval(function (gameover): Boolean {
-      var x =char.draw(this.toggleLeg, this.moveUp, this.moveDown, this.moveLeft, this.moveRight);
+    collisionDetector.gameOver = false;
+    var intId = setInterval(function (): Boolean {
+      console.log(Character.speed);
+      var x = char.draw(this.toggleLeg, this.moveUp, this.moveDown, this.moveLeft, this.moveRight);
       this.moveUp = x[0];
-      this.moveDown= x[1];
+      this.moveDown = x[1];
       let charx = x[2];
-      let chary=x[3];
-      let charwidth=x[4];
-      let charheight =x[5];
-      let charspeed =x[6];
+      let chary = x[3];
+      let charwidth = x[4];
+      let charheight = x[5];
+      let charspeed = x[6];
       this.toggleLeg = (!this.toggleLeg);
+      var gameover;
       var i: any;
-      trees.forEach(function(entry){
-        entry.translate(charx, chary, charwidth, charheight, charspeed,GameAreaComponent.lives, GameAreaComponent.score);
+      trees.forEach(function (entry) {
+        entry.translate(charx, chary, charwidth, charheight, charspeed, GameAreaComponent.lives, GameAreaComponent.score);
         gameover = collisionDetector.detect(entry, char);
       })
       lives.drawLives(GameAreaComponent.lives);
+
+      if (gameover) {
+        game(intId);
+      }
       bkgd.draw();
       return gameover;
     }, this.legSpeed, this.gameOver);
-    console.log("test"+this.gameOver);
-    //if(this.gameOver == true){
-      //this.canvas.nativeElement.getElementsByTagName("button")[1].click()
-   // }
+
     this.ctx.fillText(GameAreaComponent.score.toString(), 500, 50);
 
   }

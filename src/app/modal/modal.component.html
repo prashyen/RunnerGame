@@ -1,21 +1,23 @@
-
-<div>
-  <img style="float: right;" src='../../assets/icon.png'><h1 mat-dialog-title>
-   Runner Game
-</h1></div>
-
-<div mat-dialog-content>
+<div style="height: 8vh;">
+  <!--<img style="float: right;" src='../../assets/icon.png'>-->
+  <img style="float: right;" src='../../RunnerGame/assets/icon.png'>
+  <h1 mat-dialog-title>
+    Runner Game
+  </h1>
+</div>
+<div mat-dialog-content style="height: 37vh;">
   <mat-tab-group mat-align-tabs="center">
     <mat-tab label="How To Play">
       <div style="
       text-align: center;">
-      <img style="width: 40%;" src='../../assets/arrow keys.png'>
+        <img style="width: 80%; height: 28vh;" src='../../RunnerGame/assets/arrowkeys.png'>
+        <!--<img style="width: 40%;" src='../../assets/arrowkeys.png'>-->
       </div>
     </mat-tab>
     <mat-tab disabled label="High Scores"> Work in progress </mat-tab>
     <mat-tab disabled label="Join High Score List"> Work in progress </mat-tab>
   </mat-tab-group>
 </div>
-<div mat-dialog-actions>
-  <button mat-button  (click)="onNoClick()">Play Game</button>
+<div mat-dialog-actions style="height: 5vh;">
+  <button mat-raised-button color="primary" style='width: "-webkit-fill-available";' (click)="onNoClick()">Play Game</button>
 </div>

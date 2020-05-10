@@ -1,7 +1,11 @@
+import { GameAreaComponent } from '../game-area/game-area.component';
+import { Tree } from './tree';
+
 export class Character {
   public color = '#808080';
   public x = 20;
-  public speed = 5;
+  public static speed = 5;
+  public jumpSpeed = 5;
   public characterBodyHeight = 44;
   public characterLegHeight = 16;
   public d;
@@ -11,42 +15,45 @@ export class Character {
     this.y = (this.ctx.canvas.height - (this.ctx.canvas.height / 5) * 2 - 10) - this.characterBodyHeight - this.characterLegHeight;
     this.d = (this.ctx.canvas.height - (this.ctx.canvas.height / 5) * 2 - 10) - this.characterBodyHeight - this.characterLegHeight;
   }
-  private toggleLeg: Boolean;
+  
+  public static increaseSpeed(){
+    if(this.speed<10){
+      this.speed = this.speed+5;
+    }
+  }
 
-  public animateCharacter(toggleLeg: boolean, moveUp: boolean, moveDown: boolean, moveLeft: boolean, moveRight: boolean) {
-
-    this.toggleLeg = false;
-    setInterval(function () {
-      this.draw(this.toggleLeg, moveUp, moveDown, moveLeft, moveRight);
-      this.toggleLeg = (!this.toggleLeg);
-    }, 150);
+  public static decreaseSpeed(){
+    if(this.speed>5){
+      this.speed = this.speed-5;
+    }
   }
 
   public draw(toggleLeg: boolean, moveUp: boolean, moveDown: boolean, moveLeft: boolean, moveRight: boolean): any[] {
+
     this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
     if (this.y < 300 && moveUp) {
       moveDown = true;
       moveUp = false;
     } else if (moveRight && !moveDown && !moveUp && this.x + this.characterBodyWidth < window.innerWidth) {
-      this.x = this.x + this.speed;
+      this.x = this.x + Character.speed;
       this.lookRight(toggleLeg);
     } else if (moveLeft && !moveDown && !moveUp && 0 < this.x) {
-      this.x = this.x - this.speed;
+      this.x = this.x - Character.speed;
       this.lookLeft(toggleLeg);
     } else if (moveUp && !moveDown) {
       moveDown = false;
-      this.y = this.y - this.speed - 4;
+      this.y = this.y - Character.speed;
       this.lookRight(toggleLeg);
     }
     else if (moveDown && this.y != (this.ctx.canvas.height - (this.ctx.canvas.height / 5) * 2 - 10) - this.characterBodyHeight - this.characterLegHeight) {
-      this.y = this.y + this.speed + 4;
+      this.y = this.y +Character.speed;
       this.lookRight(toggleLeg);
     }
     else {
       moveDown = false;
       this.lookRight(toggleLeg);
     }
-    return [moveUp, moveDown, this.x, this.y, this.characterBodyWidth, this.characterBodyHeight + this.characterLegHeight, this.speed];
+    return [moveUp, moveDown, this.x, this.y, this.characterBodyWidth, this.characterBodyHeight + this.characterLegHeight, Character.speed];
   }
 
 

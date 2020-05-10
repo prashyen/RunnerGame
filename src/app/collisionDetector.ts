@@ -15,15 +15,15 @@ export class collisionDetector {
   public static detect( tree: Tree, char: Character): boolean{
     collisionDetector.crashed=false;
     if (char.y == char.d && tree.x < (char.x + char.characterBodyWidth) && (char.x + char.characterBodyWidth) < (tree.x + tree.topWidth)) {
-      GameAreaComponent.setScore(0);
+     // GameAreaComponent.setScore(0);
       collisionDetector.crashed=true;
       collisionDetector.gameOver=true;
     }
     else if ((char.y + char.characterBodyHeight+char.characterLegHeight - 16) < tree.y + tree.topHeight && char.y + char.characterBodyHeight+char.characterLegHeight - 16 > tree.y) {
       var i;
-      for (i = 0; i <= tree.topHeight; i = i + char.speed) {
+      for (i = 0; i <= tree.topHeight; i = i + Character.speed) {
         if (tree.x + (tree.slope * i) + 3 < (char.x + char.characterBodyWidth) && (char.x + char.characterBodyWidth) < (tree.x + tree.topWidth - (tree.slope * i)) && tree.y + tree.topHeight - i == char.y + char.characterBodyHeight+char.characterLegHeight) {
-          GameAreaComponent.setScore(0);
+          //GameAreaComponent.setScore(0);
           collisionDetector.crashed=true;
           collisionDetector.gameOver=true
           break;
